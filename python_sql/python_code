@@ -1,0 +1,42 @@
+# Importing libraries
+
+import sqlite3
+import pandas as pd
+
+# Database creation 
+
+conn = sqlite3.connect('flights_database.db')
+cursor = conn.cursor() 
+
+# Reading files
+
+years = ['2000','2001','2002','2003','2004','2005']
+airports_file = "C:/Users/lukas/Documents/UoL Everything/Programming/Python/Practice/airports.csv"
+carriers_file = "C:/Users/lukas/Documents/UoL Everything/Programming/Python/Practice/carriers.csv"
+planes_file = "C:/Users/lukas/Documents/UoL Everything/Programming/Python/Practice/plane-data.csv"
+flights_file = ["C:/Users/lukas/Documents/UoL Everything/Programming/Python/Practice/{}.csv".format(year) for year in years]
+
+# Read airports, carriers and planes 
+
+airports_df = pd.read_csv(airports_file)
+carriers_df = pd.read_csv(carriers_file)
+planes_df = pd.read_csv(planes_file)
+
+# SQLite database creation
+
+for year in years:
+    flights_df = pd.read_csv(flights_file[years.index(year)])
+    flights_df.to_sql('ontime_{}'.format(year), conn, index=False)
+    
+# Airport Table
+airports_df.to_sql('airport', conn, index=False)
+
+# Carriers Table 
+carriers_df.to_sql('carriers', conn, index=False)    
+
+# Planes Table
+planes_df.to_sql('planes', conn, index=False) 
+
+# It is important to note that the code will create a file in the pre-set up directory
+conn.commit()
+conn.close()
